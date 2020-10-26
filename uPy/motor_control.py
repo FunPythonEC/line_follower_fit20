@@ -16,12 +16,12 @@ class MotorControl(
 	self.node = uros.NodeHandle(2, 115200, tx=17, rx=16)
 	
 	#motor1
-	self.ENA = PWM(Pin(2), freq=20000, duty=620)
+	self.ENA = PWM(Pin(2), freq=10000, duty=600)
 	self.IN1 = Pin(12,Pin.OUT)
 	self.IN2 = Pin(14,Pin.OUT)
 
 	#motor2
-	self.ENB = PWM(Pin(0), freq=20000, duty=620)
+	self.ENB = PWM(Pin(0), freq=10000, duty=600)
 	self.IN3 = Pin(27,Pin.OUT)
 	self.IN4 = Pin(26,Pin.OUT)
 
@@ -54,9 +54,9 @@ class MotorControl(
     def error_callback(self, msg):
         pos_err =  msg.data
 	print(pos_err)
-        if pos_err<-0:
+        if pos_err<-40:
 		self.turn_left()
-	if pos_err>0:
+	if pos_err>40:
 		self.turn_right()
 	else:
 		self.go_straight()
