@@ -9,31 +9,34 @@ class line_follower(object):
         cv_image = self.bridge.imgmsg_to_cv2(msg, "rgb8")
         h, w, d = cv_image.shape
 
-        lower = numpy.array([10, 15, 70], dtype="uint8")
-        upper = numpy.array([100, 140, 220], dtype="uint8")
+        lower = numpy.array([4, 15, 70], dtype="uint8")
+        upper = numpy.array([100, 140, 255], dtype="uint8")
         mask = cv2.inRange(cv_image, lower, upper)
 
         output = cv2.bitwise_and(cv_image, cv_image, mask=mask)
+	
         output[
             numpy.where(
-                (output[:, :, 0] > 82)
+                (output[:, :, 0] > 70)
                 & (output[:, :, 0] < 95)
-                & (output[:, :, 1] > 97)
-                & (output[:, :, 1] < 108)
+                & (output[:, :, 1] > 80)
+                & (output[:, :, 1] < 100)
                 & (output[:, :, 2] > 83)
-                & (output[:, :, 2] < 97)
+                & (output[:, :, 2] < 98)
             )
         ] = [0, 0, 0]
+	#print(cv_image[10,w/2])
         output[
             numpy.where(
-                (output[:, :, 0] > 10)
+                (output[:, :, 0] > 4)
                 & (output[:, :, 0] < 78)
                 & (output[:, :, 1] > 30)
                 & (output[:, :, 1] < 125)
                 & (output[:, :, 2] > 60)
-                & (output[:, :, 2] < 190)
+                & (output[:, :, 2] < 255)
             )
         ] = [255, 255, 255]
+	
 
         gray_image = cv2.cvtColor(output, cv2.COLOR_RGB2GRAY)
         ret, thresh = cv2.threshold(gray_image, 127, 255, 0)
@@ -41,7 +44,7 @@ class line_follower(object):
         M = cv2.moments(thresh)
         masked_image_msg = self.bridge.cv2_to_imgmsg(output, "rgb8")
         cX = int(M["m10"] / M["m00"])
-        err = cX -20 - w / 2
+        err = cX - w / 2
 	print("Error position: ", err)
 
         # 	cv2.imshow("mask",output)
@@ -62,11 +65,6 @@ class line_follower(object):
         self.processed_image_pub = rospy.Publisher(
             "/line_follower/processed_image", Image, queue_size=1
         )
-        self.processed_image = Image()
-        self.processed_image.width = 640
-        self.processed_image.height = 480
-        # self.boundaries = [([5, 5, 50], [25, 25, 145])]
-
 
 def image_listener():
     rospy.init_node("line_follower_processor", anonymous=True)
