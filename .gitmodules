@@ -1,0 +1,3 @@
+[submodule "line_follower_ws/src/usb_cam"]
+	path = line_follower_ws/src/usb_cam
+	url = https://github.com/ros-drivers/usb_cam.git
